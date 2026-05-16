@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" role="img" aria-labelledby="title desc">
+  <title id="title">Fusion Cup 2026</title>
+  <desc id="desc">A blue trophy crest with a soccer ball and Fusion Cup 2026 lettering.</desc>
+  <defs>
+    <linearGradient id="cup" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#3ec7f4"/>
+      <stop offset="1" stop-color="#0682c3"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="260" fill="transparent"/>
+  <g transform="translate(214 14)">
+    <path d="M54 67c-31 1-50 11-50 32 0 37 39 63 67 68l7-28c-22-6-41-23-43-40-1-7 6-10 19-10z" fill="url(#cup)" stroke="#063552" stroke-width="8"/>
+    <path d="M158 67c31 1 50 11 50 32 0 37-39 63-67 68l-7-28c22-6 41-23 43-40 1-7-6-10-19-10z" fill="url(#cup)" stroke="#063552" stroke-width="8"/>
+    <path d="M42 53h128l-16 119c-2 18-17 31-35 31H93c-18 0-33-13-35-31z" fill="url(#cup)" stroke="#063552" stroke-width="8"/>
+    <circle cx="106" cy="44" r="42" fill="#f8fbff" stroke="#063552" stroke-width="8"/>
+    <path d="M106 18l19 14-7 23H94l-7-23zM67 43l22-11 6 24-18 15zM145 43l-22-11-6 24 18 15zM84 79l10-24h24l10 24c-14 9-30 9-44 0z" fill="#0b314c"/>
+    <path d="M24 121h164l-20 38H44z" fill="#073553"/>
+    <path d="M12 151h188l-23 28H35z" fill="#073553"/>
+    <text x="106" y="151" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="900" fill="#fff">FUSION</text>
+    <text x="106" y="178" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="900" fill="#fff">CUP</text>
+    <text x="106" y="204" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" fill="#073553">2026</text>
+    <path d="M82 205h48l5 26H77z" fill="url(#cup)" stroke="#063552" stroke-width="6"/>
+    <rect x="55" y="229" width="102" height="17" rx="8" fill="url(#cup)" stroke="#063552" stroke-width="6"/>
+  </g>
+</svg>
