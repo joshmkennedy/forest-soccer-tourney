@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
+import { chromium } from "playwright";
 
 import { MatchStage } from "@/generated/prisma/enums";
 
@@ -46,19 +47,99 @@ export type ScrapedMatch = {
 };
 
 export async function fetchNcFusionCupTournament(sourceUrl: string) {
-  const response = await fetch(sourceUrl, {
-    headers: {
-      "user-agent": "Forest 2016G Black tournament monitor",
-    },
-  });
+  const response = await fetchTournamentPage(sourceUrl);
+  let html: string;
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch tournament page: ${response.status}`);
+  if (response.ok) {
+    html = await response.text();
+  } else if (response.status === 403) {
+    html = await fetchTournamentPageWithPlaywright(sourceUrl);
+  } else {
+    throw new Error(
+      `Failed to fetch tournament page: ${response.status}. The tournament site may be blocking server-side requests.`
+    );
   }
 
-  const html = await response.text();
-
   return parseNcFusionCupTournament(html, sourceUrl);
+}
+
+async function fetchTournamentPage(sourceUrl: string) {
+  const response = await fetch(sourceUrl, {
+    headers: browserHeaders(sourceUrl),
+    redirect: "follow",
+  });
+
+  if (response.status !== 403) {
+    return response;
+  }
+
+  return fetch(sourceUrl, {
+    headers: {
+      ...browserHeaders(sourceUrl),
+      referer: new URL("/", sourceUrl).toString(),
+    },
+    redirect: "follow",
+  });
+}
+
+function browserHeaders(sourceUrl: string) {
+  const origin = new URL(sourceUrl).origin;
+
+  return {
+    accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    pragma: "no-cache",
+    priority: "u=0, i",
+    referer: origin,
+    "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"macOS"',
+    "sec-fetch-dest": "document",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-user": "?1",
+    "upgrade-insecure-requests": "1",
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  };
+}
+
+async function fetchTournamentPageWithPlaywright(sourceUrl: string) {
+  const browser = await chromium.launch({
+    headless: true,
+  });
+
+  try {
+    const page = await browser.newPage({
+      userAgent:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      extraHTTPHeaders: {
+        "accept-language": "en-US,en;q=0.9",
+      },
+    });
+
+    const response = await page.goto(sourceUrl, {
+      waitUntil: "domcontentloaded",
+      timeout: 45_000,
+    });
+
+    if (!response?.ok()) {
+      throw new Error(
+        `Playwright failed to fetch tournament page: ${response?.status() ?? "no response"}`
+      );
+    }
+
+    await page
+      .locator("#ctl00_ContentPlaceHolder1_divScreen, #divGames, #divStds")
+      .first()
+      .waitFor({ timeout: 15_000 });
+
+    return page.content();
+  } finally {
+    await browser.close();
+  }
 }
 
 export function parseNcFusionCupTournament(html: string, sourceUrl: string): ScrapedTournament {
