@@ -8,5 +8,9 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User'
+export type * from './models/Tournament'
+export type * from './models/Group'
+export type * from './models/Team'
+export type * from './models/Stats'
+export type * from './models/Match'
 export type * from './commonInputTypes'

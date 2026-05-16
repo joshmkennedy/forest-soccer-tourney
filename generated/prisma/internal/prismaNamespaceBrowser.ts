@@ -51,7 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  Tournament: 'Tournament',
+  Group: 'Group',
+  Team: 'Team',
+  Stats: 'Stats',
+  Match: 'Match'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -70,14 +74,77 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const UserScalarFieldEnum = {
+export const TournamentScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  season: 'season',
+  sourceUrl: 'sourceUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+export type TournamentScalarFieldEnum = (typeof TournamentScalarFieldEnum)[keyof typeof TournamentScalarFieldEnum]
+
+
+export const GroupScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  tournamentId: 'tournamentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GroupScalarFieldEnum = (typeof GroupScalarFieldEnum)[keyof typeof GroupScalarFieldEnum]
+
+
+export const TeamScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  association: 'association',
+  logoUrl: 'logoUrl',
+  tournamentId: 'tournamentId',
+  groupId: 'groupId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TeamScalarFieldEnum = (typeof TeamScalarFieldEnum)[keyof typeof TeamScalarFieldEnum]
+
+
+export const StatsScalarFieldEnum = {
+  id: 'id',
+  teamId: 'teamId',
+  wins: 'wins',
+  ties: 'ties',
+  losses: 'losses',
+  goalsFor: 'goalsFor',
+  goalsAgainst: 'goalsAgainst',
+  goalDifference: 'goalDifference',
+  tieBreaker: 'tieBreaker',
+  points: 'points',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StatsScalarFieldEnum = (typeof StatsScalarFieldEnum)[keyof typeof StatsScalarFieldEnum]
+
+
+export const MatchScalarFieldEnum = {
+  id: 'id',
+  tournamentId: 'tournamentId',
+  homeTeamId: 'homeTeamId',
+  awayTeamId: 'awayTeamId',
+  winnerTeamId: 'winnerTeamId',
+  date: 'date',
+  stage: 'stage',
+  field: 'field',
+  homeScore: 'homeScore',
+  awayScore: 'awayScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MatchScalarFieldEnum = (typeof MatchScalarFieldEnum)[keyof typeof MatchScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -94,4 +161,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

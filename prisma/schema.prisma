@@ -7,9 +7,99 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Tournament {
+  id          String   @id @default(cuid())
+  name        String
+  season      String?
+  sourceUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  groups  Group[]
+  teams   Team[]
+  matches Match[]
+
+  @@unique([name, season])
+}
+
+model Group {
+  id           String   @id @default(cuid())
+  name         String
+  tournamentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  teams      Team[]
+
+  @@unique([tournamentId, name])
+}
+
+model Team {
+  id           String   @id @default(cuid())
+  name         String
+  association  String
+  logoUrl      String?
+  tournamentId String
+  groupId      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  group      Group?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  stats      Stats?
+  homeMatches Match[]   @relation("HomeTeam")
+  awayMatches Match[]   @relation("AwayTeam")
+  wonMatches  Match[]   @relation("WinnerTeam")
+
+  @@unique([tournamentId, name])
+}
+
+model Stats {
+  id             String   @id @default(cuid())
+  teamId         String   @unique
+  wins           Int      @default(0)
+  ties           Int      @default(0)
+  losses         Int      @default(0)
+  goalsFor       Int      @default(0)
+  goalsAgainst   Int      @default(0)
+  goalDifference Int      @default(0)
+  tieBreaker     Int?
+  points         Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model Match {
+  id           String     @id @default(cuid())
+  tournamentId String
+  homeTeamId   String?
+  awayTeamId   String?
+  winnerTeamId String?
+  date         DateTime
+  stage        MatchStage
+  field        String?
+  homeScore    Int?
+  awayScore    Int?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  home       Team?      @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: SetNull)
+  away       Team?      @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: SetNull)
+  winner     Team?      @relation("WinnerTeam", fields: [winnerTeamId], references: [id], onDelete: SetNull)
+
+  @@index([tournamentId, date])
+  @@index([homeTeamId])
+  @@index([awayTeamId])
+  @@index([winnerTeamId])
+}
+
+enum MatchStage {
+  Group
+  Semifinal
+  Consolation
+  Final
 }
