@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import type { AnyNode } from "domhandler";
-import { chromium } from "playwright";
 
 import { MatchStage } from "@/generated/prisma/enums";
 
@@ -52,8 +51,6 @@ export async function fetchNcFusionCupTournament(sourceUrl: string) {
 
   if (response.ok) {
     html = await response.text();
-  } else if (response.status === 403) {
-    html = await fetchTournamentPageWithPlaywright(sourceUrl);
   } else {
     throw new Error(
       `Failed to fetch tournament page: ${response.status}. The tournament site may be blocking server-side requests.`
@@ -106,41 +103,6 @@ function browserHeaders(sourceUrl: string) {
   };
 }
 
-async function fetchTournamentPageWithPlaywright(sourceUrl: string) {
-  const browser = await chromium.launch({
-    headless: true,
-  });
-
-  try {
-    const page = await browser.newPage({
-      userAgent:
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      extraHTTPHeaders: {
-        "accept-language": "en-US,en;q=0.9",
-      },
-    });
-
-    const response = await page.goto(sourceUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: 45_000,
-    });
-
-    if (!response?.ok()) {
-      throw new Error(
-        `Playwright failed to fetch tournament page: ${response?.status() ?? "no response"}`
-      );
-    }
-
-    await page
-      .locator("#ctl00_ContentPlaceHolder1_divScreen, #divGames, #divStds")
-      .first()
-      .waitFor({ timeout: 15_000 });
-
-    return page.content();
-  } finally {
-    await browser.close();
-  }
-}
 
 export function parseNcFusionCupTournament(html: string, sourceUrl: string): ScrapedTournament {
   const $ = cheerio.load(html);

@@ -1,5 +1,10 @@
 import { logger, schedules } from "@trigger.dev/sdk"
+import { neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
 
+neonConfig.webSocketConstructor = ws;
+
+// import/create your db client AFTER this line
 import { syncScrapedTournament } from "@/src/domain/sync-tournament"
 import { fetchNcFusionCupTournament } from "@/src/scraping/nc-fusion-cup"
 
